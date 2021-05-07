@@ -4,9 +4,12 @@ from snake_lib.snake_state import snake_state, possible_directions, possible_sta
 import time
 import sys
 import keyboard
+import queue
+
 
 cells = 100
 root = 10
+snake=queue.Queue()
 
 (board,current_direction,head,starting_head) = snake_state(cells)
 
@@ -19,8 +22,8 @@ elif current_direction == possible_directions[2]:
 else: 
     offset = -1
 
-tail=head
 last_head=head
+snake.put(head)
 head_state = starting_head
 alive = True
 growth = False
@@ -80,6 +83,8 @@ while alive:
             growth = True
     # convert head index to horizontal or vertical bar depending on current direction
     board[head] = head_state
+    # add new head pos to queue
+    snake.put(head)
     # convert last head index to a bend if current head and last head don't match
     if(head_state != board[last_head]):
         if board[last_head] == '┃':
@@ -106,9 +111,9 @@ while alive:
                     board[last_head] = '┓'
                 
     # if growth flag is not tagged
-    ## store current tail index as last tail index
-    ## move tail index according to tail shape
-    ## erase last tail index
+    if not growth:    
+        ## fetch oldest coord from queue, use it to blank the last cell
+        board[snake.get()] = ' '
     
     linear = ''.join(board)
     console_draw(linear,root)
