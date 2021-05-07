@@ -9,9 +9,9 @@ def snake_state(size:int=49):
     starting_states = [' '] * size
     starting_direction = random.choice(possible_directions)
     starting_head = start_dir_head_state_map[starting_direction]
-    starting_cell = random.randrange(0,size)
+    starting_cell = int((size - (size%2))/2)
     starting_states[starting_cell] = starting_head
-    return (starting_states,starting_direction,starting_cell)
+    return (starting_states,starting_direction,starting_cell,starting_head)
 
 def _test():
     res = snake_state(16)
