@@ -5,7 +5,9 @@ import time
 import sys
 import keyboard
 import queue
+import random
 
+random.seed()
 
 cells = 100
 root = 10
@@ -27,6 +29,7 @@ snake.put(head)
 head_state = starting_head
 alive = True
 growth = False
+food = False
 
 def up(_):
     global current_direction
@@ -81,6 +84,7 @@ while alive:
         else:
             ## toggle growth flag
             growth = True
+            food = False
     # convert head index to horizontal or vertical bar depending on current direction
     board[head] = head_state
     # add new head pos to queue
@@ -114,7 +118,15 @@ while alive:
     if not growth:    
         ## fetch oldest coord from queue, use it to blank the last cell
         board[snake.get()] = ' '
-    
+    if not food:
+        ## try to insert food
+        ## random index
+        candidate = random.randrange(0,len(board))
+        if board[candidate] == ' ':
+            board[candidate] = '#'
+            food = True
+
+    growth = False
     linear = ''.join(board)
     console_draw(linear,root)
     
