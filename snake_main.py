@@ -1,17 +1,27 @@
 from snake_lib.console_draw import console_draw
-from snake_lib.snake_state import snake_state, possible_directions, possible_states, start_dir_head_state_map
-
 import time
 import sys
 import keyboard
-import queue
+from collections import deque
 import random
+
+possible_states = ['┃','━','┏','┓','┗','┛',' ','#']
+possible_directions = ['u','r','d','l']
+start_dir_head_state_map = {'u':'┃','r':'━','d':'┃','l':'━'}
+
+def snake_state(size:int=49):
+    starting_states = [' '] * size
+    starting_direction = random.choice(possible_directions)
+    starting_head = start_dir_head_state_map[starting_direction]
+    starting_cell = int((size - (size%2))/2)
+    starting_states[starting_cell] = starting_head
+    return (starting_states,starting_direction,starting_cell,starting_head)
 
 random.seed()
 
 cells = 100
 root = 10
-snake=queue.Queue()
+snake=deque()
 
 (board,current_direction,head,starting_head) = snake_state(cells)
 
@@ -24,8 +34,10 @@ elif current_direction == possible_directions[2]:
 else: 
     offset = -1
 
+
+
 last_head=head
-snake.put(head)
+snake.append(head)
 head_state = starting_head
 alive = True
 growth = False
@@ -88,7 +100,7 @@ while alive:
     # convert head index to horizontal or vertical bar depending on current direction
     board[head] = head_state
     # add new head pos to queue
-    snake.put(head)
+    snake.append(head)
     # convert last head index to a bend if current head and last head don't match
     if(head_state != board[last_head]):
         if board[last_head] == '┃':
@@ -117,7 +129,7 @@ while alive:
     # if growth flag is not tagged
     if not growth:    
         ## fetch oldest coord from queue, use it to blank the last cell
-        board[snake.get()] = ' '
+        board[snake.popleft()] = ' '
     if not food:
         ## try to insert food
         ## random index
